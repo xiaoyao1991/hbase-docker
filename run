@@ -1,0 +1,17 @@
+#!/bin/bash
+
+cd /opt
+
+service ssh restart
+ssh-keyscan -H localhost >> ~/.ssh/known_hosts
+
+IP = `ip addr show eth0 | grep 'inet' | cut -d/ -f1 | awk '{print $2}'`
+echo "$IP $(hostname)" >> /etc/hosts
+
+# zookeeper/bin/zkServer.sh start
+
+hadoop/bin/hdfs namenode -format
+hadoop/sbin/start-dfs.sh
+hbase/bin/start-hbase.sh
+
+tail -f hbase/logs/*.log
